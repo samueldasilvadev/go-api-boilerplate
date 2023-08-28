@@ -1,11 +1,13 @@
 package http
 
 import (
-	"github.com/labstack/echo/v4"
-	"go-skeleton/application/services/dummy/GET"
+	dummy "go-skeleton/application/services/dummy/GET"
 	"go-skeleton/pkg"
 	"go-skeleton/pkg/config"
 	"go-skeleton/pkg/logger"
+	dummyRepository "go-skeleton/pkg/repositories/user"
+
+	"github.com/labstack/echo/v4"
 )
 
 type Server struct {
@@ -38,7 +40,7 @@ func (hs *Server) Start(port string) {
 }
 
 func (hs *Server) HandleDummy(context echo.Context) error {
-	s := dummy.NewService(hs.logger)
+	s := dummy.NewService(hs.logger, dummyRepository.NewRepository())
 	s.Execute(
 		dummy.NewRequest(context.Param("dummy_id")),
 	)
