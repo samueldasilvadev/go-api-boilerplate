@@ -1,4 +1,3 @@
-version: '3.7'
 services:
   zord-http:
     build:
@@ -21,7 +20,7 @@ services:
     container_name: mysql
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
-      start_period: 1s
+      start_period: 5s
       interval: 1s
       timeout: 5s
       retries: 2

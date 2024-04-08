@@ -25,7 +25,7 @@ func NewServer(reg *registry.Registry) *Server {
 	}
 }
 
-func (hs *Server) Start() {
+func (hs *Server) Setup() *echo.Echo {
 	var server = echo.New()
 
 	server.HideBanner = true
@@ -42,6 +42,11 @@ func (hs *Server) Start() {
 		hs.logger.Info(fmt.Sprintf("[server.route] Declared %s", index))
 	}
 
+	return server
+}
+
+func (hs *Server) Start() {
+	var server = hs.Setup()
 	hs.Shutdown(server.Start(":" + hs.config.ReadConfig("HTTP_PORT")))
 }
 
