@@ -19,12 +19,13 @@ var (
 )
 
 func main() {
+	setup()
 	echoserver := server.NewServer(reg)
 	handler := apigwhandler.NewAPIGWHandler(echoserver.Setup())
 	lambda.Start(handler.Handler)
 }
 
-func init() {
+func setup() {
 	conf := config.NewConfig()
 	err := conf.LoadEnvs()
 	if err != nil {
