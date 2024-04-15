@@ -24,6 +24,7 @@ require (
 	ariga.io/atlas v0.19.1-0.20240218093714-1a4929bdea1f // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
+	github.com/aws/aws-lambda-go v1.46.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
