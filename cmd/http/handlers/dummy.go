@@ -20,22 +20,27 @@ import (
 
 type DummyHandlers struct {
 	DummyRepository *dummyRepository.DummyRepository
-
-	logger    *logger.Logger
-	idCreator *idCreator.IdCreator
-	validator *validator.Validator
+	reg             *registry.Registry
+	logger          *logger.Logger
+	idCreator       *idCreator.IdCreator
+	validator       *validator.Validator
 }
 
 func NewDummyHandlers(reg *registry.Registry) *DummyHandlers {
 	return &DummyHandlers{
-		DummyRepository: reg.Inject("dummyRepository").(*dummyRepository.DummyRepository),
-		logger:          reg.Inject("logger").(*logger.Logger),
-		idCreator:       reg.Inject("idCreator").(*idCreator.IdCreator),
-		validator:       reg.Inject("validator").(*validator.Validator),
+		reg: reg,
 	}
 }
 
+func (hs *DummyHandlers) initDeps() {
+	hs.DummyRepository = hs.reg.Inject("dummyRepository.DummyRepository").(*dummyRepository.DummyRepository)
+	hs.logger = hs.reg.Inject("logger.Logger").(*logger.Logger)
+	hs.idCreator = hs.reg.Inject("idCreator.IdCreator").(*idCreator.IdCreator)
+	hs.validator = hs.reg.Inject("validator.Validator").(*validator.Validator)
+}
+
 func (hs *DummyHandlers) HandleGetDummy(context echo.Context) error {
+	hs.initDeps()
 	s := dummyGet.NewService(hs.logger, hs.DummyRepository)
 	data := new(dummyGet.Data)
 
@@ -56,6 +61,7 @@ func (hs *DummyHandlers) HandleGetDummy(context echo.Context) error {
 }
 
 func (hs *DummyHandlers) HandleCreateDummy(context echo.Context) error {
+	hs.initDeps()
 	s := dummyCreate.NewService(hs.logger, hs.DummyRepository, hs.idCreator)
 	data := new(dummyCreate.Data)
 
@@ -76,6 +82,7 @@ func (hs *DummyHandlers) HandleCreateDummy(context echo.Context) error {
 }
 
 func (hs *DummyHandlers) HandleEditDummy(context echo.Context) error {
+	hs.initDeps()
 	s := dummyEdit.NewService(hs.logger, hs.DummyRepository)
 	data := new(dummyEdit.Data)
 
@@ -96,6 +103,7 @@ func (hs *DummyHandlers) HandleEditDummy(context echo.Context) error {
 }
 
 func (hs *DummyHandlers) HandleListDummy(context echo.Context) error {
+	hs.initDeps()
 	s := dummyList.NewService(
 		hs.logger,
 		hs.DummyRepository,
@@ -124,6 +132,7 @@ func (hs *DummyHandlers) HandleListDummy(context echo.Context) error {
 }
 
 func (hs *DummyHandlers) HandleDeleteDummy(context echo.Context) error {
+	hs.initDeps()
 	s := dummyDelete.NewService(hs.logger, hs.DummyRepository)
 	data := new(dummyDelete.Data)
 

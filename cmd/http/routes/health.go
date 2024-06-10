@@ -12,10 +12,16 @@ func NewHealthRoute() *Health {
 	return &Health{}
 }
 
-func (hs *Health) DeclarePrivateRoutes(server *echo.Group, apiPrefix string) {}
+func (hs *Health) DeclarePrivateRoutes(_ *echo.Group, _ string) {}
 
-func (hs *Health) DeclarePublicRoutes(server *echo.Group, apiPrefix string) {
-	server.GET(apiPrefix+"/health", func(c echo.Context) error {
+func (hs *Health) DeclarePublicRoutes(server *echo.Group, _ string) {
+	server.GET("/", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, "OK")
+	})
+	server.GET("/health", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, "OK")
+	})
+	server.POST("/auth/generate", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, "OK")
 	})
 }

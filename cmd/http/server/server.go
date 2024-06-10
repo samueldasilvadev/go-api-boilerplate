@@ -20,8 +20,8 @@ type Server struct {
 
 func NewServer(reg *registry.Registry, apiPrefix string) *Server {
 	return &Server{
-		config:    reg.Inject("config").(*config.Config),
-		logger:    reg.Inject("logger").(*logger.Logger),
+		config:    reg.Inject("config.Config").(*config.Config),
+		logger:    reg.Inject("logger.Logger").(*logger.Logger),
 		registry:  reg,
 		apiPrefix: apiPrefix,
 	}

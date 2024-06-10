@@ -23,37 +23,58 @@ func Setup() {
 		panic(err)
 	}
 
-	ApiPrefix = conf.ReadConfig("API_PREFIX")
-
-	l := logger.NewLogger(
-		conf.ReadConfig("ENVIRONMENT"),
-		conf.ReadConfig("APP"),
-		conf.ReadConfig("VERSION"),
-	)
-
-	l.Boot()
-
 	db := database.NewMysql(
-		l,
+		Reg.Inject("logger.Logger").(*logger.Logger),
 		conf.ReadConfig("DB_USER"),
 		conf.ReadConfig("DB_PASS"),
 		conf.ReadConfig("DB_URL"),
 		conf.ReadConfig("DB_PORT"),
 		conf.ReadConfig("DB_DATABASE"),
 	)
-
-	idC := idCreator.NewIdCreator()
-	val := validator.NewValidator()
-
 	db.Connect()
-	val.Boot()
+
+	ApiPrefix = conf.ReadConfig("API_PREFIX")
+
+	lFunc := func() registry.Dependency {
+		l := logger.NewLogger(
+			conf.ReadConfig("ENVIRONMENT"),
+			conf.ReadConfig("APP"),
+			conf.ReadConfig("VERSION"),
+		)
+		l.Boot()
+		return l
+	}
+
+	dbFunc := func() registry.Dependency {
+		return db
+	}
+
+	idCFunc := func() registry.Dependency {
+		return idCreator.NewIdCreator()
+	}
+
+	valFunc := func() registry.Dependency {
+		val := validator.NewValidator()
+		val.Boot()
+		return val
+	}
+
+	confFunc := func() registry.Dependency {
+		return conf
+	}
 
 	Reg = registry.NewRegistry()
-	Reg.Provide("logger", l)
-	Reg.Provide("validator", val)
-	Reg.Provide("config", conf)
-	Reg.Provide("idCreator", idC)
 
-	Reg.Provide("dummyRepository", dummyRepository.NewDummyRepository(db.Db))
+	Reg.Provide("logger.Logger", lFunc)
+	Reg.Provide("validator.Validator", valFunc)
+	Reg.Provide("config.Config", confFunc)
+	Reg.Provide("idCreator.IdCreator", idCFunc)
+	Reg.Provide("database.MySql", dbFunc)
+
+	dummyRepositoryFunc := func() registry.Dependency {
+		return dummyRepository.NewDummyRepository(Reg.Inject("database.MySql").(*database.MySql).Db)
+	}
+
+	Reg.Provide("dummyRepository.DummyRepository", dummyRepositoryFunc)
 	//{{codeGen6}}
 }
