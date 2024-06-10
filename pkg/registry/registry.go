@@ -16,7 +16,11 @@ func NewRegistry() *Registry {
 	}
 }
 
-func (r *Registry) Provide(name string, init func() Dependency) {
+func (r *Registry) Provide(name string, init Dependency) {
+	r.deps[name] = init
+}
+
+func (r *Registry) OnDemandProvide(name string, init func() Dependency) {
 	r.provideFunctions[name] = init
 }
 
@@ -24,7 +28,11 @@ func (r *Registry) Inject(dep string) Dependency {
 	depInstance, ok := r.deps[dep]
 	if !ok {
 		fmt.Println(dep + " Initialized")
-		r.deps[dep] = r.provideFunctions[dep]()
+		currentDep, found := r.provideFunctions[dep]
+		if !found {
+			panic("Dependency not found: " + dep)
+		}
+		r.deps[dep] = currentDep()
 		return r.deps[dep]
 	}
 	return depInstance

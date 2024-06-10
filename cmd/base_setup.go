@@ -45,10 +45,6 @@ func Setup() {
 		return l
 	}
 
-	dbFunc := func() registry.Dependency {
-		return db
-	}
-
 	idCFunc := func() registry.Dependency {
 		return idCreator.NewIdCreator()
 	}
@@ -59,22 +55,18 @@ func Setup() {
 		return val
 	}
 
-	confFunc := func() registry.Dependency {
-		return conf
-	}
-
 	Reg = registry.NewRegistry()
 
-	Reg.Provide("logger.Logger", lFunc)
-	Reg.Provide("validator.Validator", valFunc)
-	Reg.Provide("config.Config", confFunc)
-	Reg.Provide("idCreator.IdCreator", idCFunc)
-	Reg.Provide("database.MySql", dbFunc)
+	Reg.OnDemandProvide("logger.Logger", lFunc)
+	Reg.OnDemandProvide("validator.Validator", valFunc)
+	Reg.Provide("config.Config", conf)
+	Reg.OnDemandProvide("idCreator.IdCreator", idCFunc)
+	Reg.Provide("database.MySql", db)
 
 	dummyRepositoryFunc := func() registry.Dependency {
-		return dummyRepository.NewDummyRepository(Reg.Inject("database.MySql").(*database.MySql).Db)
+		return dummyRepository.NewDummyRepository(db.Db)
 	}
 
-	Reg.Provide("dummyRepository.DummyRepository", dummyRepositoryFunc)
+	Reg.OnDemandProvide("dummyRepository.DummyRepository", dummyRepositoryFunc)
 	//{{codeGen6}}
 }
